@@ -1,0 +1,2126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KisanSathi- Smart Agriculture Assistant</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { 
+    margin:0; 
+    padding:0; 
+    box-sizing:border-box; 
+    font-family:"Poppins", sans-serif; 
+  }
+  
+  html, body { 
+    width:100%; 
+    overflow-x:hidden; 
+    background:#f8f9fa; 
+    color:#333; 
+    scroll-behavior:smooth;
+  }
+
+  a { 
+    text-decoration:none; 
+    transition:0.3s; 
+  }
+  
+  a:hover { 
+    color:#ffd60a; 
+  }
+
+  img { 
+    max-width:100%; 
+    display:block; 
+  }
+
+  /* Google Translate Widget Styling */
+  #google_translate_element {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 8px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+  
+  .goog-te-gadget-simple {
+    border: none !important;
+    background: transparent !important;
+    font-family: "Poppins", sans-serif !important;
+  }
+  
+  .goog-te-gadget-simple .goog-te-menu-value span {
+    color: #2d6a4f !important;
+  }
+  
+  .goog-te-gadget-simple .goog-te-menu-value span:first-child {
+    display: none;
+  }
+  
+  .goog-te-gadget-simple .goog-te-menu-value span:last-child::before {
+    content: "🌐 ";
+  }
+
+  /* Hide Google Translate top bar */
+  .goog-te-banner-frame {
+    display: none !important;
+  }
+  
+  body {
+    top: 0px !important;
+  }
+
+  /* AI Voice Control Button */
+  .voice-control {
+    position: fixed;
+    top: 130px;
+    right: 20px;
+    z-index: 1001;
+  }
+  
+  .voice-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 12px 20px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .voice-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+  }
+  
+  .voice-btn.active {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+    animation: pulse 1.5s infinite;
+  }
+  
+  .voice-btn i {
+    font-size: 16px;
+  }
+  
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(255,107,107,0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(255,107,107,0); }
+    100% { box-shadow: 0 0 0 0 rgba(255,107,107,0); }
+  }
+
+  /* AI Chatbot Styles */
+  .chatbot-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 380px;
+    height: 600px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    z-index: 1002;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    border: 2px solid #2d6a4f;
+  }
+
+  .chatbot-container.active {
+    display: flex;
+  }
+
+  .chatbot-header {
+    background: linear-gradient(135deg, #2d6a4f, #40916c);
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .chatbot-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .chatbot-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 5px;
+  }
+
+  .chatbot-messages {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    background: #f8f9fa;
+  }
+
+  .message {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .message.user {
+    flex-direction: row-reverse;
+  }
+
+  .message-avatar {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+  }
+
+  .message.bot .message-avatar {
+    background: #2d6a4f;
+    color: white;
+  }
+
+  .message.user .message-avatar {
+    background: #667eea;
+    color: white;
+  }
+
+  .message-content {
+    max-width: 70%;
+    padding: 12px 15px;
+    border-radius: 18px;
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+
+  .message.bot .message-content {
+    background: white;
+    border: 1px solid #e9ecef;
+    color: #333;
+  }
+
+  .message.user .message-content {
+    background: #667eea;
+    color: white;
+  }
+
+  .chatbot-input {
+    padding: 15px 20px;
+    background: white;
+    border-top: 1px solid #e9ecef;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .chatbot-input input {
+    flex: 1;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 25px;
+    outline: none;
+    font-size: 0.9rem;
+  }
+
+  .chatbot-input input:focus {
+    border-color: #2d6a4f;
+  }
+
+  .chatbot-input button {
+    background: #2d6a4f;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+  }
+
+  .chatbot-input button:hover {
+    background: #40916c;
+    transform: scale(1.05);
+  }
+
+  .chatbot-tools {
+    display: flex;
+    gap: 10px;
+    padding: 10px 20px;
+    background: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+  }
+
+  .tool-btn {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    padding: 8px 15px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.3s ease;
+  }
+
+  .tool-btn:hover {
+    background: #2d6a4f;
+    color: white;
+    border-color: #2d6a4f;
+  }
+
+  .tool-btn.active {
+    background: #2d6a4f;
+    color: white;
+    border-color: #2d6a4f;
+  }
+
+  .uploaded-image {
+    max-width: 200px;
+    border-radius: 10px;
+    margin-top: 5px;
+    border: 2px solid #e9ecef;
+  }
+
+  .chatbot-toggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #2d6a4f, #40916c);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    z-index: 1001;
+    transition: all 0.3s ease;
+  }
+
+  .chatbot-toggle:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+  }
+
+  .file-input {
+    display: none;
+  }
+
+  /* Navbar */
+  .header { 
+    position:fixed; 
+    top:0; 
+    width:100%; 
+    background-color:rgba(45,106,79,0.95); 
+    color:white; 
+    display:flex; 
+    align-items:center; 
+    justify-content:space-between; 
+    padding:12px 5%; 
+    z-index:1000; 
+    backdrop-filter:blur(6px); 
+    box-shadow:0 2px 10px rgba(0,0,0,0.2);
+  }
+  
+  .logo { 
+    display: flex; 
+    align-items: center; 
+  }
+  
+  .logo h1 { 
+    font-size:1.6rem; 
+    color:#f4fce3; 
+    display:flex; 
+    align-items:center; 
+  }
+  
+  .logo img { 
+    height:45px; 
+    margin-right:10px; 
+    border-radius:50%; 
+  }
+  
+  .navbar { 
+    display: flex; 
+    align-items: center; 
+  }
+  
+  .navbar a { 
+    color:#fff; 
+    margin:0 10px; 
+    font-weight:500; 
+    font-size:0.95rem; 
+    position: relative;
+  }
+  
+  .navbar a::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: #ffd60a;
+    transition: width 0.3s ease;
+  }
+  
+  .navbar a:hover::after {
+    width: 100%;
+  }
+  
+  .navbar .btn { 
+    background-color:#52b788; 
+    padding:6px 12px; 
+    border-radius:6px; 
+    font-weight:600; 
+    font-size:0.9rem; 
+  }
+  
+  .navbar .btn:hover { 
+    background-color:#40916c; 
+  }
+  
+  #menu-btn {
+    display: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+
+  /* Home - Updated Background Image */
+  .home { 
+    display:flex; 
+    align-items:center; 
+    justify-content:center; 
+    min-height:100vh; 
+    padding:100px 5% 80px; 
+    background:linear-gradient(rgba(5, 125, 49, 0.1), rgba(29, 198, 10, 0.029)), 
+               url('https://img.freepik.com/premium-photo/beautiful-sunset-green-field-with-tree-foreground_924629-12969.jpg') center/cover no-repeat; 
+    color:#fff; 
+    text-shadow:1px 1px 4px rgba(0,0,0,0.6); 
+    flex-direction:column; 
+    text-align:center; 
+    position: relative;
+    background-size: cover;
+    background-position: center;
+  }
+  
+  .home::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, rgba(45,106,79,0.3), rgba(168,218,220,0.3));
+    z-index: -1;
+  }
+  
+  .home h1 { 
+    font-size:2.8rem; 
+    margin-bottom:10px; 
+    color:#f1faee; 
+    text-shadow: 2px 2px 6px rgba(0,0,0,0.7);
+  }
+  
+  .home p { 
+    font-size:1.2rem; 
+    margin-bottom:20px; 
+    color:#f8f9fa; 
+  }
+  
+  .home-btn { 
+    background-color:#2d6a4f; 
+    color:#fff; 
+    padding:16px 32px; 
+    border-radius:8px; 
+    font-weight:600; 
+    font-size:1.1rem;
+    transition:0.3s; 
+    box-shadow:0 5px 15px rgba(0,0,0,0.3);
+    display: inline-block;
+    margin: 8px;
+    position: relative;
+    overflow: hidden;
+    border: none;
+    cursor: pointer;
+    min-width: 220px;
+  }
+  
+  .home-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: 0.5s;
+  }
+  
+  .home-btn:hover::before {
+    left: 100%;
+  }
+  
+  .home-btn:hover { 
+    background-color:#74c69d; 
+    transform:translateY(-3px); 
+  }
+
+  /* Farming Words Section - Improved Card Sizes */
+  .farming-words {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin: 40px 0;
+    flex-wrap: wrap;
+  }
+  
+  .word-card {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 12px;
+    padding: 30px 20px;
+    text-align: center;
+    min-width: 200px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transition: transform 0.3s;
+    position: relative;
+    overflow: hidden;
+    flex: 1;
+    max-width: 250px;
+  }
+  
+  .word-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: linear-gradient(90deg, #52b788, #2d6a4f);
+  }
+  
+  .word-card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .word-card i {
+    font-size: 2.5rem;
+    color: #2d6a4f;
+    margin-bottom: 15px;
+  }
+  
+  .word-card h4 {
+    margin-bottom: 15px;
+    color: #2d6a4f;
+    font-size: 1.3rem;
+  }
+  
+  .word-card p {
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: #1b4332;
+    line-height: 1.4;
+  }
+
+  /* Features - New Background */
+  .features { 
+    padding:80px 5%; 
+    text-align:center; 
+    background:linear-gradient(rgba(51, 156, 16, 0.452), rgba(0,0,0,0.6)), 
+               url('https://thumbs.dreamstime.com/z/different-types-crops-grown-adjacent-rows-farmer-practicing-crop-rotation-sustainable-farm-where-different-types-324576474.jpg?w=992') center/cover no-repeat;
+    color:#fff; 
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .features h1 { 
+    color:#ffd60a; 
+    font-size:2rem; 
+    margin-bottom:10px; 
+  }
+  
+  .features p { 
+    margin-bottom:30px; 
+    font-size:1.1rem; 
+  }
+  
+  .buttonn { 
+    display:inline-block; 
+    margin:10px; 
+    padding:12px 20px; 
+    font-weight:600; 
+    font-size:1rem; 
+    border-radius:12px; 
+    background:linear-gradient(145deg,#52b788,#2d6a4f); 
+    color:white; 
+    box-shadow:0 8px 15px rgba(0,0,0,0.3); 
+    transition: all 0.3s ease; 
+    text-align:center; 
+    position: relative;
+    overflow: hidden;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .buttonn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: 0.5s;
+  }
+  
+  .buttonn:hover::before {
+    left: 100%;
+  }
+  
+  .buttonn:hover { 
+    transform:translateY(-6px) scale(1.05); 
+    box-shadow:0 15px 25px rgba(0,0,0,0.4); 
+    background:linear-gradient(145deg,#74c69d,#40916c); 
+  }
+
+  /* Crop Calendar - Redesigned */
+  .crop-calendar {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 15px;
+    padding: 25px;
+    margin: 30px auto;
+    max-width: 900px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  }
+  
+  .calendar-container {
+    margin-top: 20px;
+  }
+  
+  #cropSelect {
+    padding: 12px;
+    border-radius: 8px;
+    border: 2px solid #2d6a4f;
+    margin-bottom: 20px;
+    background: white;
+    color: #2d6a4f;
+    font-weight: 600;
+    width: 100%;
+    max-width: 300px;
+    font-size: 1rem;
+  }
+  
+  .calendar-view {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+  }
+  
+  .calendar-month {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 12px 8px;
+    text-align: center;
+    transition: all 0.3s;
+    font-size: 0.9rem;
+    border: 1px solid #e9ecef;
+  }
+  
+  .calendar-month.active {
+    background: #ffd60a;
+    color: #1b4332;
+    font-weight: bold;
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  }
+  
+  .calendar-month.sowing {
+    background: #a7c957;
+    color: white;
+  }
+  
+  .calendar-month.harvesting {
+    background: #e76f51;
+    color: white;
+  }
+
+  /* Weather Forecast Section - New Background */
+  .weather-forecast {
+    padding: 80px 5%;
+    background:linear-gradient(rgba(5, 1, 1, 0.093), rgba(0,0,0,0.7)), 
+               url('https://tse4.mm.bing.net/th/id/OIP.tA6naA3hS2LUvi0lvbS8PgHaEH?rs=1&pid=ImgDetMain&o=7&rm=3') center/cover no-repeat;
+    color: white;
+    text-align: center;
+  }
+  
+  .weather-cards {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 30px;
+  }
+  
+  .weather-card {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 15px;
+    padding: 20px;
+    width: 150px;
+    text-align: center;
+    color: #2d6a4f;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    transition: transform 0.3s;
+  }
+  
+  .weather-card:hover {
+    transform: translateY(-10px);
+  }
+  
+  .weather-card i {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+  }
+
+  /* Advantages - New Background */
+  .advantages { 
+    background:linear-gradient(rgba(0, 0, 0, 0.264), rgba(0,0,0,0.7)), 
+               url('https://thumbs.dreamstime.com/z/different-types-crops-grown-adjacent-rows-farmer-practicing-crop-rotation-sustainable-farm-where-different-types-324576474.jpg?w=992') center/cover no-repeat;
+    color:#fff; 
+    padding:80px 5%; 
+    text-align:center; 
+    position: relative;
+  }
+  
+  .advantages h1 { color:#ffd60a; font-size:2rem; margin-bottom:40px; }
+
+  .advantages .row { 
+    display: flex; 
+    flex-wrap: wrap; 
+    justify-content: center; 
+    gap: 30px; 
+  }
+
+  .adv-card {
+    flex: 1 1 250px;
+    max-width: 300px;
+    background: linear-gradient(145deg,#74c69d,#52b788);
+    border-radius: 20px;
+    padding: 25px;
+    color: white;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+    transition: 0.4s;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .adv-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+    transform: rotate(30deg);
+    transition: all 0.5s ease;
+    opacity: 0;
+  }
+  
+  .adv-card:hover::before {
+    opacity: 1;
+    transform: rotate(30deg) translate(10%, 10%);
+  }
+
+  .adv-card:hover {
+    transform: translateY(-15px) rotateX(3deg) rotateY(3deg) scale(1.05);
+    box-shadow: 0 25px 40px rgba(0,0,0,0.3);
+  }
+
+  .adv-card i { font-size: 2rem; margin-bottom: 15px; }
+  .adv-card h3 { margin-bottom: 12px; font-size: 1.2rem; font-weight: 600; }
+  .adv-card p { font-size: 1rem; line-height: 1.4; }
+
+  /* About / Team - Updated to show images clearly */
+  .about { 
+    background: linear-gradient(135deg, #aaafb6ed, #34495e);
+    color:rgb(217, 224, 228); 
+    padding:80px 5%; 
+    text-align:center; 
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .about::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('https://www.discoverengineering.org/wp-content/uploads/2024/11/guides-to-master-engineering-exams.jpeg') center/cover no-repeat;
+    opacity: 0.1;
+    z-index: 0;
+  }
+  
+  .about > * {
+    position: relative;
+    z-index: 1;
+  }
+  
+  .about h1 { margin-bottom:30px; font-size:2rem; color:#ffd60a; }
+  .about .box-container { display:flex; flex-wrap:wrap; justify-content:center; gap:20px; }
+  .about .box { 
+    background: linear-gradient(145deg, #ffffff, #f0f0f0);
+    color:#1b4332; 
+    border-radius:12px; 
+    padding:20px; 
+    width:250px; 
+    text-align:center; 
+    transition:0.4s; 
+    box-shadow:0 10px 20px rgb(236, 234, 244);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .about .box::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: linear-gradient(90deg, #52b788, #2d6a4f);
+  }
+  
+  .about .box:hover { transform:translateY(-10px) scale(1.05); box-shadow:0 20px 30px rgba(0,0,0,0.3); }
+  .about .box img { 
+    border-radius:50%; 
+    height:120px; 
+    width:120px; 
+    object-fit:cover; 
+    margin-bottom:15px; 
+    transition:0.3s; 
+    border: 3px solid #52b788;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  }
+  .about .box img:hover { transform:scale(1.1); }
+  .about .box h3 { margin-bottom:8px; }
+  .about .box p { font-size:0.9rem; color:#2d6a4f; }
+
+  /* Footer */
+  .footer { 
+    background: linear-gradient(135deg, #2a2a2a, #1a1a1a);
+    color:rgb(230, 222, 222); 
+    padding:40px 5% 20px; 
+    text-align:center; 
+    position: relative;
+  }
+  
+  .footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('https://static.theprint.in/wp-content/uploads/2021/04/20200628060L-1.jpg') center/cover no-repeat;
+    opacity: 0.05;
+    z-index: 0;
+  }
+  
+  .footer > * {
+    position: relative;
+    z-index: 1;
+  }
+  
+  .footer .credit { border-top:1px solid #2d6a4f; margin-top:20px; padding-top:10px; font-size:0.9rem; }
+  .footer span { color:#ffd60a; font-weight:600; }
+
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .animate-fadeInUp {
+    animation: fadeInUp 0.8s ease forwards;
+  }
+  
+  .delay-1 { animation-delay: 0.2s; }
+  .delay-2 { animation-delay: 0.4s; }
+  .delay-3 { animation-delay: 0.6s; }
+  
+
+  .loader {
+    display: none;
+    width: 48px;
+    height: 48px;
+    border: 5px solid #FFF;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    animation: rotation 1s linear infinite;
+    margin: 20px auto;
+  }
+  
+  @keyframes rotation {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+
+  
+  @media (max-width: 1024px) {
+    .home h1 {
+      font-size: 2.4rem;
+    }
+    
+    .calendar-view {
+      grid-template-columns: repeat(4, 1fr);
+    }
+    
+    .voice-btn {
+      padding: 10px 16px;
+      font-size: 13px;
+    }
+    
+    .chatbot-container {
+      width: 350px;
+      height: 500px;
+    }
+  }
+  
+  @media (max-width: 768px){ 
+    .navbar { 
+      display: none; 
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 100%;
+      background: rgba(45,106,79,0.95);
+      flex-direction: column;
+      padding: 20px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    
+    .navbar.active {
+      display: flex;
+    }
+    
+    .navbar a {
+      margin: 10px 0;
+      font-size: 1.1rem;
+    }
+    
+    #menu-btn { 
+      display: block; 
+      font-size: 1.5rem; 
+    } 
+    
+    .home h1 { 
+      font-size: 2rem; 
+    } 
+    
+    .home p { 
+      font-size: 1rem; 
+    } 
+    
+    .features h1, .advantages h1, .about h1 { 
+      font-size: 1.5rem; 
+    } 
+    
+    .adv-card { 
+      flex: 1 1 90%; 
+      max-width: 90%; 
+    } 
+    
+    .about .box { 
+      width: 90%; 
+    } 
+    
+    #google_translate_element {
+      top: 70px;
+      right: 10px;
+    }
+    
+    .calendar-view {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .home-btn {
+      padding: 14px 28px;
+      font-size: 1rem;
+      min-width: 200px;
+    }
+    
+    .farming-words {
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .word-card {
+      width: 100%;
+      max-width: 250px;
+    }
+    
+    .voice-control {
+      top: 130px;
+      right: 15px;
+    }
+    
+    .voice-btn {
+      padding: 8px 14px;
+      font-size: 12px;
+    }
+    
+    .chatbot-container {
+      width: 320px;
+      height: 450px;
+      bottom: 10px;
+      right: 10px;
+    }
+    
+    .chatbot-toggle {
+      bottom: 10px;
+      right: 10px;
+      width: 50px;
+      height: 50px;
+      font-size: 1.3rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .home h1 {
+      font-size: 1.8rem;
+    }
+    
+    .home p {
+      font-size: 0.9rem;
+    }
+    
+    .calendar-view {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .weather-card {
+      width: 100%;
+      max-width: 300px;
+    }
+    
+    .farming-words {
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .word-card {
+      width: 100%;
+      max-width: 250px;
+    }
+    
+    .home-btn {
+      padding: 12px 24px;
+      font-size: 0.95rem;
+      min-width: 180px;
+    }
+    
+    .voice-btn {
+      padding: 6px 12px;
+      font-size: 11px;
+    }
+    
+    .chatbot-container {
+      width: 300px;
+      height: 400px;
+    }
+    
+    .message-content {
+      max-width: 85%;
+    }
+  }
+</style>
+</head>
+<body>
+
+
+  
+<button class="chatbot-toggle" id="chatbotToggle">
+  <i class="fas fa-robot"></i>
+</button>
+
+
+
+<div class="chatbot-container" id="chatbotContainer">
+  <div class="chatbot-header">
+    <h3><i class="fas fa-robot"></i> KisanSathi AI Assistant</h3>
+    <button class="chatbot-close" id="chatbotClose">
+      <i class="fas fa-times"></i>
+    </button>
+  </div>
+  
+  <div class="chatbot-messages" id="chatbotMessages">
+    <div class="message bot">
+      <div class="message-avatar">
+        <i class="fas fa-robot"></i>
+      </div>
+      <div class="message-content">
+        Hello! I am KisanSathi AI assistant. Ask me about your farming problems, crop advice, disease diagnosis, or weather information. You can upload images or talk directly!
+      </div>
+    </div>
+  </div>
+  
+  <div class="chatbot-tools">
+    <button class="tool-btn" id="voiceChatBtn">
+      <i class="fas fa-microphone"></i> Voice Chat
+    </button>
+    <button class="tool-btn" id="uploadImageBtn">
+      <i class="fas fa-image"></i> Upload Image
+    </button>
+    <button class="tool-btn" id="clearChatBtn">
+      <i class="fas fa-trash"></i> Clear Chat
+    </button>
+    <button class="tool-btn" id="quickQuestionsBtn">
+      <i class="fas fa-question-circle"></i> Quick Questions
+    </button>
+  </div>
+  
+  <div class="chatbot-input">
+    <input type="file" id="imageUpload" class="file-input" accept="image/*">
+    <input type="text" id="chatInput" placeholder="Type your question here...">
+    <button id="voiceInputBtn" class="chatbot-input-btn">
+      <i class="fas fa-microphone"></i>
+    </button>
+    <button id="imageInputBtn" class="chatbot-input-btn">
+      <i class="fas fa-image"></i>
+    </button>
+    <button id="sendMessageBtn">
+      <i class="fas fa-paper-plane"></i>
+    </button>
+  </div>
+</div>
+
+
+
+<div class="voice-control">
+  <button class="voice-btn" id="voiceToggle">
+    <i class="fas fa-volume-up"></i>
+    <span id="voiceStatus">AI Voice: OFF</span>
+  </button>
+</div>
+
+
+
+<div id="google_translate_element"></div>
+
+
+
+<header class="header">
+  <div class="logo">
+    <div style="height:45px; width:45px; background:#52b788; border-radius:50%; display:flex; align-items:center; justify-content:center; margin-right:10px; color:white;">
+      <i class="fas fa-seedling"></i>
+    </div>
+    <h1>KisanSathi</h1>
+  </div>
+  <nav class="navbar" id="navbar">
+    <a href="#home">Home</a>
+    <a href="#features">Features</a>
+    <a href="#advantages">Advantages</a>
+    <a href="#about">About Us</a>
+    <a href="#footer">Contact</a>
+    <a href="explore/index.html" class="btn">Explore</a>
+  </nav>
+  <div class="fas fa-bars" id="menu-btn" onclick="toggleNavbar()"></div>
+</header>
+
+
+
+<section class="home" id="home">
+  <div class="content">
+    <h1 id="homeTitle" class="animate-fadeInUp">Your Smart Agriculture Assistant</h1>
+    <p id="homeText" class="animate-fadeInUp delay-1">A new beginning for the green revolution with KisanSathi</p>
+
+    
+    <div class="farming-words animate-fadeInUp delay-2">
+        <div class="word-card">
+            <i class="fas fa-seedling"></i>
+            <h4>Crop Planning</h4>
+            <p>Right crop at<br>the right time</p>
+        </div>
+        <div class="word-card">
+            <i class="fas fa-tint"></i>
+            <h4>Irrigation</h4>
+            <p>Efficient use<br>of water</p>
+        </div>
+        <div class="word-card">
+            <i class="fas fa-leaf"></i>
+            <h4>Organic Farming</h4>
+            <p>Environment-friendly<br>farming practice</p>
+        </div>
+    </div>
+    
+    <div class="animate-fadeInUp delay-3">
+      <a href="explore/index.html" class="home-btn" target="_blank">Start Exploring</a>
+    </div>
+  </div>
+</section>
+
+
+
+<section class="features" id="features">
+  <h1 id="featuresTitle" class="animate-fadeInUp">Features</h1>
+  <p id="featuresText" class="animate-fadeInUp delay-1">AI and data analytics based agricultural tools.</p>
+  <div class="animate-fadeInUp delay-2">
+    <a href=" https://cpbnasmwkenpjl7p9jj3aw.kisansathi.app/" class="buttonn">Crop Recommendation</a>
+    <a href="https://atbyqzxbhxdinn9ba4sk8s.kisansathi.app/" class="buttonn">Plant Disease Detection</a>
+    <a href="weather-forecast/index.html" class="buttonn">Weather Forecast</a>
+    <a href="guide/index.html" class="buttonn">Smart Farming Guide</a>
+  </div>
+  
+
+  
+  <div class="crop-calendar animate-fadeInUp delay-3">
+    <h3>Crop Calendar</h3>
+    <p>Know the best crop timing for your region</p>
+    <div class="calendar-container">
+        <select id="cropSelect" onchange="updateCalendar()">
+            <option value="rice">Rice</option>
+            <option value="ragi">Ragi (Finger Millet)</option>
+            <option value="jowar">Jowar (Sorghum)</option>
+            <option value="maize">Maize</option>
+            <option value="sugarcane">Sugarcane</option>
+            <option value="cotton">Cotton</option>
+            <option value="groundnut">Groundnut</option>
+            <option value="sunflower">Sunflower</option>
+            <option value="chilli">Chilli</option>
+            <option value="turmeric">Turmeric</option>
+            <option value="onion">Onion</option>
+            <option value="tomato">Tomato</option>
+        </select>
+        <div id="calendarView" class="calendar-view">
+           
+          
+        </div>
+    </div>
+  </div>
+</section>
+
+
+
+<section class="weather-forecast" id="weather">
+  <h1 class="animate-fadeInUp">5-Day Weather Forecast</h1>
+  <p class="animate-fadeInUp delay-1">Know your region's weather in advance</p>
+  
+  <div class="weather-cards">
+    <div class="weather-card animate-fadeInUp delay-1">
+      <i class="fas fa-sun" style="color: #ffd60a;"></i>
+      <h4>Today</h4>
+      <p>28°C</p>
+      <p>Morning Chill</p>
+    </div>
+    <div class="weather-card animate-fadeInUp delay-2">
+      <i class="fas fa-cloud-sun" style="color: #74c69d;"></i>
+      <h4>Tomorrow</h4>
+      <p>30°C</p>
+      <p>Partly Cloudy</p>
+    </div>
+    <div class="weather-card animate-fadeInUp delay-3">
+      <i class="fas fa-cloud-rain" style="color: #457b9d;"></i>
+      <h4>Day 3</h4>
+      <p>26°C</p>
+      <p>Chance of Rain</p>
+    </div>
+    <div class="weather-card animate-fadeInUp delay-1">
+      <i class="fas fa-cloud" style="color: #a8dadc;"></i>
+      <h4>Day 4</h4>
+      <p>29°C</p>
+      <p>Cloudy</p>
+    </div>
+    <div class="weather-card animate-fadeInUp delay-2">
+      <i class="fas fa-sun" style="color: #ffd60a;"></i>
+      <h4>Day 5</h4>
+      <p>31°C</p>
+      <p>Sunny</p>
+    </div>
+  </div>
+</section>
+
+
+
+<section class="advantages" id="advantages">
+  <h1 class="animate-fadeInUp">KisanSathi Advantages</h1>
+  <div class="row">
+    <div class="adv-card animate-fadeInUp delay-1">
+      <i class="fas fa-cloud-sun"></i>
+      <h3>Accurate Forecast</h3>
+      <p>Timely weather and disease information.</p>
+    </div>
+    <div class="adv-card animate-fadeInUp delay-2">
+      <i class="fas fa-seedling"></i>
+      <h3>Increased Yield</h3>
+      <p>Improve crop results with AI recommendations.</p>
+    </div>
+    <div class="adv-card animate-fadeInUp delay-3">
+      <i class="fas fa-leaf"></i>
+      <h3>Eco-Friendly</h3>
+      <p>Reduce chemical usage and promote crop rotation.</p>
+    </div>
+  </div>
+</section>
+
+
+
+<section class="about" id="about">
+  <h1 class="animate-fadeInUp">About Us</h1>
+  <div class="box-container">
+    <div class="box animate-fadeInUp delay-1">
+      <img src="images/pradeep.jpg" alt="pradeep" style="height:120px; width:120px; border-radius:50%; object-fit:cover; margin:0 auto 15px; border:3px solid #52b788;">
+      <h3>Pradeep Nilange</h3>
+      <p>B.E Computer Science</p>
+      <p>7483689187</p>
+      <p>pradeepnilange3@gmail.com</p>
+      <p>https://github.com/Pradeep-Nilange</p>
+    </div>
+    <div class="box animate-fadeInUp delay-2">
+      <img src="images/krishna.jpg" alt="krishna" style="height:120px; width:120px; border-radius:50%; object-fit:cover; margin:0 auto 15px; border:3px solid #52b788;">
+      <h3>Krishna Gaikwad</h3>
+      <p>B.E Computer Science</p>
+      <p>8310089906</p>
+      <p>krshndevanand@gmail.com</p>
+      <p>https://github.com/Krishna-Gaikwad</p>
+    </div>
+    <div class="box animate-fadeInUp delay-3">
+      <img src="images/abhishek.jpg" alt="abhishek" style="height:120px; width:120px; border-radius:50%; object-fit:cover; margin:0 auto 15px; border:3px solid #52b788;">
+      <h3>Abhishek Awari</h3>
+      <p>B.E Computer Science</p>
+      <p>7892909208</p>
+      <p>abhishekawari@gmail.com</p>
+      <p>https://github.com/Abhishek-Awari/</p>
+    </div>
+  </div>
+</section>
+
+
+
+<footer class="footer" id="footer">
+  <p>📞 Contact: Pradeep | Krishna | Abhishek</p>
+  <div class="credit">© 2026 <span>KisanSathi</span> | All Rights Reserved</div>
+</footer>
+
+
+
+<div class="loader" id="pageLoader"></div>
+
+<script>
+  // Chatbot Questions Database with Correct Answers
+  const chatbotQuestions = [
+    "What is the best crop for red soil?",
+    "How to control leaf spot disease?",
+    "What is the ideal rainfall for rice cultivation?",
+    "How to improve soil fertility naturally?",
+    "What are the symptoms of nitrogen deficiency?",
+    "How much water does wheat need?",
+    "What is crop rotation?",
+    "How to prevent pest attacks organically?",
+    "When to harvest tomatoes?",
+    "What is drip irrigation?",
+    "How to test soil pH?",
+    "What are cover crops?",
+    "How to store grains properly?",
+    "What is precision farming?",
+    "How to control weeds without chemicals?"
+  ];
+
+  // Enhanced AI Responses Database with Correct Answers
+  const aiResponses = {
+    // Soil and Crop Questions
+    "red soil": "Red soil is best suited for crops like groundnut, potato, maize, millets, pulses, and oilseeds. It is rich in iron but poor in nitrogen, phosphorus, and organic matter. For optimal yield, add organic compost and balanced fertilizers.",
+    "best crop for red soil": "In red soil, you can successfully grow: Groundnut, Potato, Maize, Ragi (Finger Millet), Pulses (red gram, green gram), and Oilseeds (sunflower, castor). These crops adapt well to the acidic nature of red soil.",
+    "soil": "Red soil requires crops that tolerate acidity and low fertility. Recommended crops: Groundnut, Potato, Maize, Millet, Pulses. Add lime to reduce acidity and organic matter to improve fertility.",
+    
+    // Disease Control
+    "leaf spot disease": "To control leaf spot disease: 1. Remove infected leaves immediately 2. Avoid overhead watering 3. Apply fungicides like Mancozeb or Chlorothalonil 4. Use neem oil spray for organic control 5. Ensure proper plant spacing for air circulation",
+    "control leaf spot": "Leaf spot management: Remove affected leaves, improve air circulation, water at soil level, apply copper-based fungicides, and practice crop rotation. For organic control, use baking soda spray (1 tbsp per gallon of water).",
+    
+    // Rainfall Requirements
+    "rainfall for rice": "Rice requires 1000-2000 mm of rainfall during its growing season. Ideal distribution: 150-200 mm per month. It needs standing water during initial growth stages (3-5 cm depth).",
+    "rice cultivation rainfall": "Rice grows best with 1000-1500 mm evenly distributed rainfall. Critical periods: Seedling stage (needs flooded conditions), Tillering stage (needs moist soil), Flowering stage (needs adequate water).",
+    
+    // Soil Fertility
+    "improve soil fertility": "Natural ways to improve soil fertility: 1. Add organic compost 2. Use green manure crops 3. Practice crop rotation 4. Apply vermicompost 5. Use biofertilizers 6. Add bone meal or rock phosphate 7. Practice mulching",
+    "soil fertility naturally": "Enhance soil fertility naturally by: Growing leguminous crops (fix nitrogen), Adding farmyard manure, Using cover crops, Applying neem cake, Practicing zero-tillage, and Maintaining soil pH between 6.0-7.0.",
+    
+    // Nutrient Deficiency
+    "nitrogen deficiency": "Symptoms of nitrogen deficiency: Yellowing of older leaves, stunted growth, reduced yield, pale green color throughout plant. Remedy: Apply urea, ammonium sulfate, or organic sources like compost and green manure.",
+    "nitrogen deficiency symptoms": "Signs: Yellowing starts from older leaves, leaves become pale green to yellow, reduced plant growth, smaller leaves. Treatment: Apply 50-100 kg urea per acre or use leguminous cover crops.",
+    
+    // Water Requirements
+    "water for wheat": "Wheat needs 450-650 mm of water throughout its growth cycle. Critical stages: Crown root initiation (20-25 DAS), Tillering (45-50 DAS), Flowering (60-70 DAS). Apply irrigation at these stages for best yield.",
+    "wheat water needs": "Wheat requires 4-6 irrigations of 5-7 cm depth each. Total water requirement: 400-500 mm. Most critical irrigation: CRI stage (20-25 days after sowing) and flowering stage.",
+    
+    // Crop Rotation
+    "crop rotation": "Crop rotation means growing different crops in sequence on the same land. Benefits: Breaks pest cycles, improves soil fertility, reduces erosion, controls weeds. Example: Rice-Wheat-Pulse or Maize-Wheat-Soybean rotation.",
+    "what is crop rotation": "Crop rotation is alternating different crop species in the same field over time. Example pattern: Legume-Cereal-Root crop. This maintains soil health, controls diseases, and improves yield by 10-25%.",
+    
+    // Pest Control
+    "prevent pest attacks organically": "Organic pest control: 1. Use neem oil spray 2. Plant marigolds as companion crops 3. Apply garlic-chili spray 4. Use diatomaceous earth 5. Introduce beneficial insects 6. Practice crop rotation 7. Use yellow sticky traps",
+    "organic pest control": "Natural pest management: Neem seed kernel extract (5%), Cow urine spray (10%), Trichoderma application, Bird perches in fields, Light traps, and Botanical pesticides like pyrethrum.",
+    
+    // Harvesting
+    "harvest tomatoes": "Tomatoes are ready for harvest 60-90 days after transplanting. Signs: Uniform red color, firm texture, easy separation from stem. Harvest in morning, avoid harvesting in rain, and store at 12-15°C.",
+    "when to harvest tomatoes": "Harvest tomatoes when fully colored but firm. For fresh market: fully ripe. For transport: breaker stage (pink). For seed saving: fully ripe on plant. Best time: Early morning when cool.",
+    
+    // Irrigation
+    "drip irrigation": "Drip irrigation delivers water directly to plant roots through emitters. Benefits: Saves 30-70% water, reduces weed growth, prevents leaf diseases, allows fertigation. Components: Pump, filters, mainline, submain, drippers.",
+    "what is drip irrigation": "Drip irrigation is a micro-irrigation system that applies water slowly to the soil. Advantages: 90% efficiency, reduces waterlogging, saves fertilizer, works on slopes. Suitable for: Fruits, vegetables, plantation crops.",
+    
+    // Soil Testing
+    "test soil pH": "Soil pH testing methods: 1. pH meter (most accurate) 2. Litmus paper 3. Chemical test kits 4. Vinegar-baking soda test 5. Professional lab analysis. Ideal pH: 6.0-7.5 for most crops.",
+    "soil pH test": "To test soil pH: Take soil sample from 15-20 cm depth, mix with distilled water, use pH strip or meter. Acidic soil (pH<6): add lime. Alkaline soil (pH>7.5): add gypsum or sulfur.",
+    
+    // Cover Crops
+    "cover crops": "Cover crops protect soil between main crops. Examples: Clover, Rye, Vetch, Mustard, Cowpea. Benefits: Prevents erosion, adds organic matter, fixes nitrogen, suppresses weeds, improves soil structure.",
+    "what are cover crops": "Cover crops are grown to cover soil rather than for harvest. Types: Legumes (fix nitrogen), Grasses (prevent erosion), Brassicas (biofumigants). They improve soil health and subsequent crop yield.",
+    
+    // Grain Storage
+    "store grains properly": "Proper grain storage: 1. Dry to 12-14% moisture 2. Clean thoroughly 3. Use airtight containers 4. Add neem leaves or ash 5. Store in cool, dry place 6. Use PICS bags for hermetic storage 7. Regular inspection",
+    "grain storage": "Grain storage requirements: Moisture <14%, Temperature <25°C, Clean storage area, Rodent-proof bins, Regular monitoring. Traditional methods: Neem leaves, ash lining, sun drying every 2-3 months.",
+    
+    // Precision Farming
+    "precision farming": "Precision farming uses GPS, sensors, drones to optimize inputs. Benefits: 20-30% input savings, higher yields, reduced environmental impact. Tools: Soil sensors, drones, variable rate technology, yield monitors.",
+    "what is precision farming": "Precision agriculture applies exact inputs (water, fertilizer) where and when needed. Technologies: GIS mapping, remote sensing, auto-steering, yield mapping. Increases efficiency by 25-40%.",
+    
+    // Weed Control
+    "control weeds without chemicals": "Non-chemical weed control: 1. Mulching (organic or plastic) 2. Manual weeding 3. Flaming 4. Solarization 5. Crop rotation 6. Cover crops 7. Biological control 8. Stale seedbed technique",
+    "weed control without chemicals": "Organic weed management: Use cover crops to suppress weeds, practice intercropping, apply corn gluten meal, use vinegar spray (20% acetic acid), flame weeding, and maintain healthy soil.",
+    
+    // General Responses
+    "hello": "Hello! I'm KisanSathi AI assistant. How can I help you with farming today? Ask me about crops, soil, pests, weather, or anything agriculture-related!",
+    "hi": "Hi there! I'm here to help with all your agricultural queries. What would you like to know about farming?",
+    "help": "I can help with: Crop selection, Pest control, Soil management, Irrigation, Fertilizer use, Disease diagnosis, Weather information, and Modern farming techniques. Just ask me anything!",
+    "thanks": "You're welcome! I'm always here to help with your farming success. Feel free to ask more questions anytime.",
+    "thank": "You're welcome! Happy farming! Let me know if you need more assistance.",
+    
+    // Weather
+    "weather": "Current weather in your region: 28°C, moderate humidity. Chance of rain in next 3 days. 5-day forecast: Today - 28°C, Tomorrow - 30°C, Day 3 - 26°C, Day 4 - 29°C, Day 5 - 31°C.",
+    "rain": "Rainfall is crucial for agriculture. Average annual rainfall for optimal farming is 600-1000mm. Monitor weather forecasts regularly for better planning.",
+    
+    // Technology
+    "ai": "AI in agriculture helps with crop monitoring, disease detection, yield prediction, and precision farming. It analyzes satellite images, weather data, and soil sensors for better decisions.",
+    "technology": "Modern farming technologies include drones, IoT sensors, automated irrigation, AI-based monitoring, and mobile apps for farm management.",
+    
+    // Market
+    "price": "Crop prices fluctuate based on season, demand, and quality. Monitor local mandi rates, government MSPs, and market trends. Current average prices: Rice ₹25/kg, Wheat ₹22/kg, Tomato ₹30/kg.",
+    "market": "Agricultural markets (mandis) connect farmers with buyers. E-NAM (National Agricultural Market) provides online trading platform across India for better price discovery.",
+    
+    // Government Schemes
+    "scheme": "Government schemes include: PM-KISAN (₹6000/year income support), PMFBY (crop insurance), Soil Health Card, Paramparagat Krishi Vikas Yojana (organic farming), and Kisan Credit Card.",
+    "subsidy": "Subsidies available for: Seeds (50%), Drip irrigation (90%), Greenhouses (50%), Tractors (25-40%), and Crop insurance (premium subsidy). Check with local agriculture department.",
+  };
+
+  // Map questions to specific responses
+  const questionResponseMap = {
+    "What is the best crop for red soil?": aiResponses["best crop for red soil"],
+    "How to control leaf spot disease?": aiResponses["leaf spot disease"],
+    "What is the ideal rainfall for rice cultivation?": aiResponses["rainfall for rice"],
+    "How to improve soil fertility naturally?": aiResponses["improve soil fertility"],
+    "What are the symptoms of nitrogen deficiency?": aiResponses["nitrogen deficiency symptoms"],
+    "How much water does wheat need?": aiResponses["water for wheat"],
+    "What is crop rotation?": aiResponses["crop rotation"],
+    "How to prevent pest attacks organically?": aiResponses["prevent pest attacks organically"],
+    "When to harvest tomatoes?": aiResponses["harvest tomatoes"],
+    "What is drip irrigation?": aiResponses["drip irrigation"],
+    "How to test soil pH?": aiResponses["test soil pH"],
+    "What are cover crops?": aiResponses["cover crops"],
+    "How to store grains properly?": aiResponses["store grains properly"],
+    "What is precision farming?": aiResponses["precision farming"],
+    "How to control weeds without chemicals?": aiResponses["control weeds without chemicals"]
+  };
+
+  let isListening = false;
+  let recognition = null;
+  let voiceEnabled = false;
+
+  function initChatbot() {
+    const chatbotToggle = document.getElementById('chatbotToggle');
+    const chatbotContainer = document.getElementById('chatbotContainer');
+    const chatbotClose = document.getElementById('chatbotClose');
+    const sendMessageBtn = document.getElementById('sendMessageBtn');
+    const chatInput = document.getElementById('chatInput');
+    const uploadImageBtn = document.getElementById('uploadImageBtn');
+    const imageUpload = document.getElementById('imageUpload');
+    const voiceChatBtn = document.getElementById('voiceChatBtn');
+    const clearChatBtn = document.getElementById('clearChatBtn');
+    const voiceInputBtn = document.getElementById('voiceInputBtn');
+    const imageInputBtn = document.getElementById('imageInputBtn');
+    const quickQuestionsBtn = document.getElementById('quickQuestionsBtn');
+
+    chatbotToggle.addEventListener('click', () => {
+      chatbotContainer.classList.toggle('active');
+    });
+
+    chatbotClose.addEventListener('click', () => {
+      chatbotContainer.classList.remove('active');
+    });
+
+    sendMessageBtn.addEventListener('click', sendMessage);
+
+    chatInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        sendMessage();
+      }
+    });
+
+    uploadImageBtn.addEventListener('click', () => {
+      imageUpload.click();
+    });
+
+    imageUpload.addEventListener('change', handleImageUpload);
+
+    voiceChatBtn.addEventListener('click', toggleVoiceChat);
+
+    voiceInputBtn.addEventListener('click', toggleVoiceInput);
+
+    imageInputBtn.addEventListener('click', () => {
+      imageUpload.click();
+    });
+
+    clearChatBtn.addEventListener('click', clearChat);
+
+    quickQuestionsBtn.addEventListener('click', showQuickQuestions);
+
+    initSpeechRecognition();
+  }
+
+  function showQuickQuestions() {
+    const messagesContainer = document.getElementById('chatbotMessages');
+    
+    // Add bot message
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'message bot';
+    messageDiv.innerHTML = `
+      <div class="message-avatar">
+        <i class="fas fa-robot"></i>
+      </div>
+      <div class="message-content">
+        <strong>Quick Questions You Can Ask:</strong><br><br>
+        <div style="display: flex; flex-wrap: wrap; gap: 5px;">
+          ${chatbotQuestions.map((q, i) => 
+            `<button class="quick-q-btn" onclick="askQuestion('${q}')" 
+             style="background: #2d6a4f; color: white; border: none; padding: 8px 12px; margin: 2px; border-radius: 15px; font-size: 0.75rem; cursor: pointer; transition: all 0.3s;">
+             ${q}
+            </button>`
+          ).join('')}
+        </div>
+      </div>
+    `;
+    messagesContainer.appendChild(messageDiv);
+    scrollToBottom();
+  }
+
+  function askQuestion(question) {
+    document.getElementById('chatInput').value = question;
+    sendMessage();
+  }
+
+  function initSpeechRecognition() {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    
+    if (SpeechRecognition) {
+      recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.lang = 'en-US';
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      recognition.onresult = (event) => {
+        const speechResult = event.results[0][0].transcript;
+        document.getElementById('chatInput').value = speechResult;
+        sendMessage();
+      };
+
+      recognition.onerror = (event) => {
+        console.error('Speech recognition error', event.error);
+        addBotMessage('Sorry, I could not recognize your voice. Please try again.');
+      };
+
+      recognition.onend = () => {
+        isListening = false;
+        updateVoiceButton();
+      };
+    } else {
+      console.warn('Speech recognition not supported in this browser');
+      document.getElementById('voiceChatBtn').disabled = true;
+      document.getElementById('voiceChatBtn').innerHTML = '<i class="fas fa-microphone-slash"></i> Voice not supported';
+      document.getElementById('voiceInputBtn').disabled = true;
+      document.getElementById('voiceInputBtn').innerHTML = '<i class="fas fa-microphone-slash"></i>';
+    }
+  }
+
+  function toggleVoiceChat() {
+    if (!recognition) {
+      addBotMessage('Sorry, voice recognition is not supported in this browser.');
+      return;
+    }
+
+    if (isListening) {
+      recognition.stop();
+      isListening = false;
+      document.getElementById('voiceChatBtn').classList.remove('active');
+    } else {
+      recognition.start();
+      isListening = true;
+      document.getElementById('voiceChatBtn').classList.add('active');
+      addBotMessage('I am listening... Please speak now.');
+    }
+    
+    updateVoiceButton();
+  }
+
+  function toggleVoiceInput() {
+    if (!recognition) {
+      addBotMessage('Sorry, voice recognition is not supported in this browser.');
+      return;
+    }
+
+    if (isListening) {
+      recognition.stop();
+      isListening = false;
+      document.getElementById('voiceInputBtn').classList.remove('active');
+    } else {
+      recognition.start();
+      isListening = true;
+      document.getElementById('voiceInputBtn').classList.add('active');
+      addBotMessage('I am listening... Please speak now.');
+    }
+    
+    updateVoiceButton();
+  }
+
+  function updateVoiceButton() {
+    const voiceChatBtn = document.getElementById('voiceChatBtn');
+    const voiceInputBtn = document.getElementById('voiceInputBtn');
+    
+    if (isListening) {
+      voiceChatBtn.innerHTML = '<i class="fas fa-microphone-slash"></i> Stop';
+      voiceChatBtn.style.background = '#e74c3c';
+      voiceChatBtn.style.color = 'white';
+      
+      voiceInputBtn.style.background = '#e74c3c';
+      voiceInputBtn.style.color = 'white';
+    } else {
+      voiceChatBtn.innerHTML = '<i class="fas fa-microphone"></i> Voice Chat';
+      voiceChatBtn.style.background = '';
+      voiceChatBtn.style.color = '';
+      
+      voiceInputBtn.style.background = '';
+      voiceInputBtn.style.color = '';
+    }
+  }
+
+  function handleImageUpload(event) {
+    const file = event.target.files[0];
+    if (file) {
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          addUserMessage('Image uploaded for analysis', e.target.result);
+          setTimeout(() => {
+            const responses = [
+              "Analyzing image... This appears to be a healthy plant with good leaf color and structure. No signs of disease detected.",
+              "Image analysis complete: I detect possible nutrient deficiency. Consider applying balanced fertilizer (NPK 19:19:19).",
+              "This image shows signs of fungal infection (yellow spots with brown margins). Remove affected leaves and apply Mancozeb fungicide.",
+              "Plant appears healthy but may need more sunlight. Ensure at least 6 hours of direct sunlight daily for optimal growth.",
+              "I detect pest damage (chewing marks) in this image. Consider using neem oil spray (5ml per liter) or appropriate organic pesticide."
+            ];
+            const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+            addBotMessage(randomResponse);
+          }, 2000);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        addBotMessage('Please upload a valid image file (JPG, PNG, etc.).');
+      }
+    }
+    
+    event.target.value = '';
+  }
+
+  function sendMessage() {
+    const chatInput = document.getElementById('chatInput');
+    const message = chatInput.value.trim();
+    
+    if (message) {
+      addUserMessage(message);
+      chatInput.value = '';
+      
+      setTimeout(() => {
+        generateAIResponse(message);
+      }, 800);
+    }
+  }
+
+  function addUserMessage(message, imageUrl = null) {
+    const messagesContainer = document.getElementById('chatbotMessages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'message user';
+    
+    let content = `
+      <div class="message-avatar">
+        <i class="fas fa-user"></i>
+      </div>
+      <div class="message-content">
+        ${message}
+    `;
+    
+    if (imageUrl) {
+      content += `<img src="${imageUrl}" alt="Uploaded image" class="uploaded-image">`;
+    }
+    
+    content += `</div>`;
+    messageDiv.innerHTML = content;
+    messagesContainer.appendChild(messageDiv);
+    scrollToBottom();
+  }
+
+  function addBotMessage(message) {
+    const messagesContainer = document.getElementById('chatbotMessages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'message bot';
+    messageDiv.innerHTML = `
+      <div class="message-avatar">
+        <i class="fas fa-robot"></i>
+      </div>
+      <div class="message-content">${message}</div>
+    `;
+    messagesContainer.appendChild(messageDiv);
+    scrollToBottom();
+    
+    if (voiceEnabled) {
+      speakText(message);
+    }
+  }
+
+  function scrollToBottom() {
+    const messagesContainer = document.getElementById('chatbotMessages');
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  }
+
+  function clearChat() {
+    const messagesContainer = document.getElementById('chatbotMessages');
+    
+    while (messagesContainer.children.length > 1) {
+      messagesContainer.removeChild(messagesContainer.lastChild);
+    }
+    addBotMessage('Chat history cleared. How can I help you today?');
+  }
+
+  function generateAIResponse(userMessage) {
+    const lowerMessage = userMessage.toLowerCase().trim();
+    let response = '';
+    
+    // First check if it's a predefined question
+    if (questionResponseMap[userMessage]) {
+      response = questionResponseMap[userMessage];
+    } else {
+      // Check for keywords in the message
+      let matchedKeyword = '';
+      
+      // Check for exact question matches first
+      for (const question of chatbotQuestions) {
+        if (lowerMessage.includes(question.toLowerCase())) {
+          matchedKeyword = question;
+          break;
+        }
+      }
+      
+      if (matchedKeyword && questionResponseMap[matchedKeyword]) {
+        response = questionResponseMap[matchedKeyword];
+      } else {
+        // Check for keywords in aiResponses
+        const keywords = Object.keys(aiResponses);
+        for (const keyword of keywords) {
+          if (lowerMessage.includes(keyword.toLowerCase())) {
+            response = aiResponses[keyword];
+            break;
+          }
+        }
+        
+        // If still no match, check partial matches
+        if (!response) {
+          const words = lowerMessage.split(' ');
+          for (const word of words) {
+            if (word.length > 3) { // Only check meaningful words
+              for (const keyword of keywords) {
+                if (keyword.toLowerCase().includes(word) || word.includes(keyword.toLowerCase())) {
+                  response = aiResponses[keyword];
+                  break;
+                }
+              }
+              if (response) break;
+            }
+          }
+        }
+        
+        // If still no response, provide a helpful suggestion
+        if (!response) {
+          response = "I understand you're asking about: \"" + userMessage + "\". For more specific advice, please ask about:\n• Crop selection for your soil type\n• Pest or disease symptoms you're seeing\n• Irrigation requirements for specific crops\n• Soil testing and improvement methods\n• Government schemes and subsidies\nOr try one of the quick questions from the menu!";
+        }
+      }
+    }
+    
+    addBotMessage(response);
+  }
+
+  let currentVoiceLanguage = 'en';
+  let voices = [];
+  let speechSynthesis = window.speechSynthesis;
+
+  const languageMap = {
+    'en': { code: 'en-US', name: 'English', voice: 'en-US' },
+    'hi': { code: 'hi-IN', name: 'हिन्दी', voice: 'hi-IN' },
+    'kn': { code: 'kn-IN', name: 'ಕನ್ನಡ', voice: 'kn-IN' },
+    'ta': { code: 'ta-IN', name: 'தமிழ்', voice: 'ta-IN' },
+    'te': { code: 'te-IN', name: 'తెలుగు', voice: 'te-IN' },
+    'mr': { code: 'mr-IN', name: 'मराठी', voice: 'mr-IN' },
+    'bn': { code: 'bn-IN', name: 'বাংলা', voice: 'bn-IN' },
+    'gu': { code: 'gu-IN', name: 'ગુજરાતી', voice: 'gu-IN' },
+    'pa': { code: 'pa-IN', name: 'ਪੰਜਾਬੀ', voice: 'pa-IN' },
+    'ml': { code: 'ml-IN', name: 'മലയാളം', voice: 'ml-IN' }
+  };
+
+  function getGoogleTargetLanguage() {
+    try {
+      const cookieEntry = document.cookie.split('; ').find(row => row.startsWith('googtrans='));
+      if (!cookieEntry) return null;
+
+      const cookieVal = decodeURIComponent(cookieEntry.split('=')[1]);
+      const parts = cookieVal.split('/').filter(Boolean);
+      if (parts.length === 0) return null;
+
+      return parts[parts.length - 1].toLowerCase();
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function updateVoiceLanguageFromTranslate() {
+    const target = getGoogleTargetLanguage();
+    if (target && languageMap[target]) {
+      currentVoiceLanguage = target;
+    }
+  }
+
+  setInterval(updateVoiceLanguageFromTranslate, 3000);
+
+  function loadVoices() {
+    voices = speechSynthesis.getVoices();
+    if (voices.length === 0) {
+      setTimeout(loadVoices, 100);
+    }
+  }
+  loadVoices();
+  if (speechSynthesis.onvoiceschanged !== undefined) {
+    speechSynthesis.onvoiceschanged = loadVoices;
+  }
+
+  function toggleVoice() {
+    voiceEnabled = !voiceEnabled;
+    const voiceToggle = document.getElementById('voiceToggle');
+    const voiceStatus = document.getElementById('voiceStatus');
+    
+    if (voiceEnabled) {
+      voiceToggle.classList.add('active');
+      voiceStatus.textContent = 'AI Voice: ON';
+      speakText('AI voice assistant enabled. Click on any element to hear its description.');
+    } else {
+      voiceToggle.classList.remove('active');
+      voiceStatus.textContent = 'AI Voice: OFF';
+      speechSynthesis.cancel();
+    }
+  }
+
+  function speakText(text, specificLang = null) {
+    if (!voiceEnabled) return;
+
+    if (!specificLang) {
+      updateVoiceLanguageFromTranslate();
+    }
+
+    speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+
+    const langCode = specificLang || currentVoiceLanguage;
+    const langInfo = languageMap[langCode] || languageMap['en'];
+    
+    utterance.lang = langInfo.voice;
+    utterance.rate = 0.9;
+    utterance.pitch = 1.0;
+
+    let candidateVoices = voices.filter(voice => {
+      const vLang = (voice.lang || '').toLowerCase();
+      return vLang.startsWith(langCode);
+    });
+
+    let preferredVoices = candidateVoices.filter(voice =>
+      voice.name.toLowerCase().includes('female') ||
+      voice.name.toLowerCase().includes('google') ||
+      voice.name.toLowerCase().includes('samantha') ||
+      voice.name.toLowerCase().includes('karen')
+    );
+
+    if (preferredVoices.length > 0) {
+      utterance.voice = preferredVoices[0];
+    } else if (candidateVoices.length > 0) {
+      utterance.voice = candidateVoices[0];
+    } else if (voices.length > 0) {
+      utterance.voice = voices[0];
+    }
+
+    speechSynthesis.speak(utterance);
+  }
+
+  function getElementText(element) {
+    if (element.tagName === 'IMG') {
+      return element.alt || 'Image';
+    } else if (element.tagName === 'A') {
+      return element.textContent || 'Link';
+    } else if (element.tagName === 'BUTTON') {
+      return element.textContent || 'Button';
+    } else if (element.tagName === 'INPUT' || element.tagName === 'SELECT') {
+      return element.placeholder || element.name || 'Input field';
+    } else {
+      return element.textContent || element.innerText || 'Element';
+    }
+  }
+
+  function addVoiceListeners() {
+    const interactiveElements = document.querySelectorAll(
+      'a, button, .home-btn, .buttonn, .word-card, .adv-card, ' +
+      '.weather-card, .box, .calendar-month, #cropSelect, #menu-btn'
+    );
+    
+    interactiveElements.forEach(element => {
+      element.addEventListener('click', function(e) {
+        if (!voiceEnabled) return;
+        e.stopPropagation();
+        const text = getElementText(this);
+        speakText(text);
+      });
+    });
+    
+    const headings = document.querySelectorAll('h1, h2, h3, h4');
+    headings.forEach(heading => {
+      heading.addEventListener('click', function() {
+        if (!voiceEnabled) return;
+        const text = getElementText(this);
+        speakText(text);
+      });
+    });
+  }
+
+  function updateCalendar() {
+    const crop = document.getElementById('cropSelect').value;
+    const calendarView = document.getElementById('calendarView');
+    
+    let sowingMonths = [];
+    let harvestingMonths = [];
+    
+    if (crop === 'rice') {
+      sowingMonths = ['June', 'July'];
+      harvestingMonths = ['September', 'October'];
+    } else if (crop === 'ragi') {
+      sowingMonths = ['June', 'July'];
+      harvestingMonths = ['September', 'October'];
+    } else if (crop === 'jowar') {
+      sowingMonths = ['June', 'July'];
+      harvestingMonths = ['September', 'October'];
+    } else if (crop === 'maize') {
+      sowingMonths = ['June', 'July'];
+      harvestingMonths = ['September', 'October'];
+    } else if (crop === 'sugarcane') {
+      sowingMonths = ['January', 'February'];
+      harvestingMonths = ['December', 'January'];
+    } else if (crop === 'cotton') {
+      sowingMonths = ['June', 'July'];
+      harvestingMonths = ['December', 'January'];
+    } else if (crop === 'groundnut') {
+      sowingMonths = ['June', 'July'];
+      harvestingMonths = ['September', 'October'];
+    } else if (crop === 'sunflower') {
+      sowingMonths = ['June', 'July'];
+      harvestingMonths = ['September', 'October'];
+    } else if (crop === 'chilli') {
+      sowingMonths = ['June', 'July'];
+      harvestingMonths = ['September', 'October'];
+    } else if (crop === 'turmeric') {
+      sowingMonths = ['May', 'June'];
+      harvestingMonths = ['January', 'February'];
+    } else if (crop === 'onion') {
+      sowingMonths = ['October', 'November'];
+      harvestingMonths = ['February', 'March'];
+    } else if (crop === 'tomato') {
+      sowingMonths = ['June', 'July'];
+      harvestingMonths = ['September', 'October'];
+    }
+    
+    let calendarHTML = '';
+    const allMonths = ['January', 'February', 'March', 'April', 'May', 'June', 
+                       'July', 'August', 'September', 'October', 'November', 'December'];
+    
+    allMonths.forEach(month => {
+      let className = '';
+      if (sowingMonths.includes(month)) {
+        className = 'sowing';
+      } else if (harvestingMonths.includes(month)) {
+        className = 'harvesting';
+      }
+      calendarHTML += `<div class="calendar-month ${className}">${month}</div>`;
+    });
+    
+    calendarView.innerHTML = calendarHTML;
+  }
+
+  function toggleNavbar() {
+    const navbar = document.getElementById('navbar');
+    navbar.classList.toggle('active');
+  }
+
+  function googleTranslateElementInit() {
+    new google.translate.TranslateElement({
+      pageLanguage: 'en',
+      includedLanguages: 'en,hi,kn,ta,te,mr,ml,gu,bn,pa',
+      layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+      autoDisplay: false
+    }, 'google_translate_element');
+  }
+
+  function addGoogleTranslateScript() {
+    const script = document.createElement('script');
+    script.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+    document.head.appendChild(script);
+  }
+
+  function showEmergencyAlert(title, message) {
+    let alertDiv = document.getElementById('emergencyAlert');
+    if (!alertDiv) {
+      alertDiv = document.createElement('div');
+      alertDiv.id = 'emergencyAlert';
+      alertDiv.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: #e74c3c;
+        color: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        z-index: 2000;
+        display: none;
+        text-align: center;
+      `;
+      alertDiv.innerHTML = `
+        <h3 id="alertTitle"></h3>
+        <p id="alertMessage"></p>
+        <button onclick="closeEmergencyAlert()" style="margin-top: 10px; padding: 5px 15px; background: white; color: #e74c3c; border: none; border-radius: 5px; cursor: pointer;">Close</button>
+      `;
+      document.body.appendChild(alertDiv);
+    }
+    
+    document.getElementById('alertTitle').textContent = title;
+    document.getElementById('alertMessage').textContent = message;
+    alertDiv.style.display = 'block';
+  }
+
+  function closeEmergencyAlert() {
+    const alertDiv = document.getElementById('emergencyAlert');
+    if (alertDiv) {
+      alertDiv.style.display = 'none';
+    }
+  }
+
+  function simulateEmergencyAlert() {
+    const alerts = [
+      {title: 'Weather Alert', message: 'Low rainfall warning. Manage water usage carefully.'},
+      {title: 'Disease Alert', message: 'Plant disease outbreak reported in your region. Check your crops.'},
+      {title: 'Price Alert', message: 'Rice prices have dropped. Check market conditions.'}
+    ];
+    
+    const randomAlert = alerts[Math.floor(Math.random() * alerts.length)];
+    showEmergencyAlert(randomAlert.title, randomAlert.message);
+  }
+
+  // Page load event
+  window.addEventListener('load', function() {
+    addGoogleTranslateScript();
+    updateCalendar();
+    addVoiceListeners();
+    document.getElementById('voiceToggle').addEventListener('click', toggleVoice);
+    initChatbot();
+    document.getElementById('pageLoader').style.display = 'none';
+    
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('animate-fadeInUp');
+        }
+      });
+    }, observerOptions);
+    
+    document.querySelectorAll('section').forEach(section => {
+      observer.observe(section);
+    });
+  });
+
+  document.getElementById('pageLoader').style.display = 'block';
+
+  document.querySelectorAll('.navbar a').forEach(link => {
+    link.addEventListener('click', () => {
+      const navbar = document.getElementById('navbar');
+      if (navbar.classList.contains('active')) {
+        navbar.classList.remove('active');
+      }
+    });
+  });
+</script>
+
+</body>
+</html>

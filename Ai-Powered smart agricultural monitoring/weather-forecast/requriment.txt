@@ -1,0 +1,7 @@
+streamlit==1.32.0
+matplotlib==3.8.0
+numpy==1.26.0
+pandas==2.1.0
+scikit-learn==1.4.0
+plotly==5.21.0
+Pillow==10.1.0streamlit run recom.py
